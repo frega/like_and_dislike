@@ -2,19 +2,17 @@
 /**
  * This tpl handles the like link and its look and feel.
  * variables avaiable:
- * @id: the entity id of the node/comment on which the link is getting printed.
- * @likes: the number is likes that is casted to the node/comment.
+ * @eid: the entity id of the node/comment on which the link is getting printed.
+ * @dislikes: the number is likes that is casted to the node/comment.
  */
-$path = base_path() . drupal_get_path("module", "likedislike");
 ?>
-<div class="dislike-container-<?php print $entity ?>" id="dislike-container-<?php print $eid; ?>">
-  <div class="dislike inline float-left">
-    <?php if ($dislikestatus == 0): ?>
-      <a href="javascript:;" data-eid="<?php print $eid; ?>" class="<?php print $entity ?>"><img src="<?php print $path ?>/images/dislike.gif" alt="Dislike" title="Dislike" class="<?php print $entity ?>"></a>
-    <?php endif; ?>
-    <?php if ($dislikestatus == 1): ?>
-      <a href="javascript:;" data-eid="<?php print $eid; ?>" class="disable-status <?php print $entity ?>"><img src="<?php print $path ?>/images/dislikeAct.gif" alt="Dislike" title="Dislike" class="<?php print $entity ?>"></a>
-    <?php endif; ?>
+<div class="like_and_dislike-container dislike type-<?php print $entity ?>" id="dislike-container-<?php print $eid; ?>">
+  <div class="inner">
+    <div class="link">
+      <a title="Dislike" data-eid="<?php print $eid; ?>" class="<?php if ($dislikestatus == 1) print ' disable-status' ?>">
+        Like <span class="count"><?php print $dislikes; ?></span>
+      </a>
+      <span style="display:none" class="throbber">Loading...</span>
+    </div>
   </div>
-  <div class="float-left dislike-count-<?php print $entity ?>"><?php print $dislikes; ?></div>
 </div>

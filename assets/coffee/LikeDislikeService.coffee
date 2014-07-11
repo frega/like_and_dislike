@@ -4,7 +4,7 @@ class window.LikeDislikeService
   @likeNode: (eid) ->
     jQuery.ajax(
       type: "GET",
-      url: Drupal.settings.basePath + "likedislike/like/node/add"
+      url: Drupal.settings.basePath + "like_and_dislike/like/node/add"
       data: 'entity_id=' + eid
       success: (msg) ->
         arrLikeCount = msg.split("/")
@@ -14,19 +14,12 @@ class window.LikeDislikeService
         if (arrLikeCount.length > 2)
           message = arrLikeCount[2]
 
-        msgDivId = "#dislike-container-" + eid + " .dislike-count-entity-node"
-        jQuery(msgDivId).html(dislikeCount)
+        jQuery('#like-container-' + eid + ' .count').html(likeCount)
+        jQuery('#dislike-container-' + eid + ' .count').html(dislikeCount)
+        jQuery('#like-container-' + eid + ' .like a.entity-node').toggleClass('disable-status')
+        jQuery('#dislike-container-' + eid + ' .dislike a.entity-node').toggleClass('disable-status')
 
-        msgDivId = "#like-container-" + eid + " .like-count-entity-node"
-        jQuery(msgDivId).html(likeCount)
-
-        imageNameLiked = "likeAct.gif"
-        imageNameDislike = "dislike.gif"
-
-        jQuery("#like-container-" + eid + ' .like a.entity-node').toggleClass('disable-status')
-        jQuery("#dislike-container-" + eid + ' .dislike a.entity-node').toggleClass('disable-status')
-        jQuery("#like-container-" + eid + ' .like img.entity-node').attr('src', Drupal.settings.basePath + likedislike_path + "/images/" + imageNameLiked)
-        jQuery("#dislike-container-" + eid + ' .dislike img.entity-node').attr('src', Drupal.settings.basePath + likedislike_path + "/images/" + imageNameDislike)
+        jQuery('#like-container-' + eid + ' .throbber').hide()
 
         if (typeof message == "string" && message.length > 0)
           alert(message)
@@ -36,7 +29,7 @@ class window.LikeDislikeService
   @dislikeNode: (eid) ->
     jQuery.ajax(
       type: "GET",
-      url: Drupal.settings.basePath + "likedislike/dislike/node/add"
+      url: Drupal.settings.basePath + "like_and_dislike/dislike/node/add"
       data: 'entity_id=' + eid
       success: (msg) ->
         arrLikeCount = msg.split("/")
@@ -46,20 +39,13 @@ class window.LikeDislikeService
         if (arrLikeCount.length > 2)
           message = arrLikeCount[2]
 
-        msgDivId = "#dislike-container-" + eid + " .dislike-count-entity-node"
-        jQuery(msgDivId).html(dislikeCount)
+        jQuery('#like-container-' + eid + ' .count').html(likeCount)
+        jQuery('#dislike-container-' + eid + ' .count').html(dislikeCount)
+        jQuery('#like-container-' + eid + ' .like a.entity-node').toggleClass('disable-status')
+        jQuery('#dislike-container-' + eid + ' .dislike a.entity-node').toggleClass('disable-status')
 
-        msgDivId = "#like-container-" + eid + " .like-count-entity-node"
-        jQuery(msgDivId).html(likeCount)
-
-        imageNameDisliked = "dislikeAct.gif"
-        imageNameLike = "like.gif"
-
-        jQuery("#dislike-container-" + eid + ' .dislike a.entity-node').toggleClass('disable-status')
-        jQuery("#like-container-" + eid + ' .like a.entity-node').toggleClass('disable-status')
-        jQuery("#dislike-container-" + eid + ' .dislike img.entity-node').attr('src', Drupal.settings.basePath + likedislike_path + "/images/" + imageNameDisliked)
-        jQuery("#like-container-" + eid + ' .like img.entity-node').attr('src', Drupal.settings.basePath + likedislike_path + "/images/" + imageNameLike)
-
+        jQuery('#dislike-container-' + eid + ' .throbber').hide()
+      
         if (typeof message == "string" && message.length > 0)
           alert(message)
     )
@@ -68,7 +54,7 @@ class window.LikeDislikeService
   @likeComment: (eid) ->
     jQuery.ajax(
       type: "GET",
-      url: Drupal.settings.basePath + "likedislike/like/comment/add"
+      url: Drupal.settings.basePath + "like_and_dislike/like/comment/add"
       data: 'entity_id=' + eid
       success: (msg) ->
         arrLikeCount = msg.split("/")
@@ -78,20 +64,13 @@ class window.LikeDislikeService
         if (arrLikeCount.length > 2)
           message = arrLikeCount[2]
 
-        msgDivId = "#dislike-container-" + eid + " .dislike-count-entity-comment"
-        jQuery(msgDivId).html(dislikeCount)
+        jQuery('#like-container-' + eid + ' .count').html(likeCount)
+        jQuery('#dislike-container-' + eid + ' .count').html(dislikeCount)
+        jQuery('#like-container-' + eid + ' .like a.entity-comment').toggleClass('disable-status')
+        jQuery('#dislike-container-' + eid + ' .dislike a.entity-comment').toggleClass('disable-status')
 
-        msgDivId = "#like-container-" + eid + " .like-count-entity-comment"
-        jQuery(msgDivId).html(likeCount)
-
-        imageNameLiked = "likeAct.gif"
-        imageNameDislike = "dislike.gif"
-
-        jQuery("#like-container-" + eid + ' .like a.entity-comment').toggleClass('disable-status')
-        jQuery("#dislike-container-" + eid + ' .dislike a.entity-comment').toggleClass('disable-status')
-        jQuery("#like-container-" + eid + ' .like img.entity-comment').attr('src', Drupal.settings.basePath + likedislike_path + "/images/" + imageNameLiked)
-        jQuery("#dislike-container-" + eid + ' .dislike img.entity-comment').attr('src', Drupal.settings.basePath + likedislike_path + "/images/" + imageNameDislike)
-
+        jQuery('#like-container-' + eid + ' .throbber').hide()
+        
         if (typeof message == "string" && message.length > 0)
           alert(message)
     )
@@ -100,7 +79,7 @@ class window.LikeDislikeService
   @dislikeComment: (eid) ->
     jQuery.ajax(
       type: "GET",
-      url: Drupal.settings.basePath + "likedislike/dislike/comment/add"
+      url: Drupal.settings.basePath + "like_and_dislike/dislike/comment/add"
       data: 'entity_id=' + eid
       success: (msg) ->
         arrLikeCount = msg.split("/")
@@ -110,20 +89,13 @@ class window.LikeDislikeService
         if (arrLikeCount.length > 2)
           message = arrLikeCount[2]
 
-        msgDivId = "#dislike-container-" + eid + " .dislike-count-entity-comment"
-        jQuery(msgDivId).html(dislikeCount)
+        jQuery('#like-container-' + eid + ' .count').html(likeCount)
+        jQuery('#dislike-container-' + eid + ' .count').html(dislikeCount)
+        jQuery('#like-container-' + eid + ' .like a.entity-comment').toggleClass('disable-status')
+        jQuery('#dislike-container-' + eid + ' .dislike a.entity-comment').toggleClass('disable-status')
 
-        msgDivId = "#like-container-" + eid + " .like-count-entity-comment"
-        jQuery(msgDivId).html(likeCount)
-
-        imageNameDisliked = "dislikeAct.gif"
-        imageNameLike = "like.gif"
-
-        jQuery("#dislike-container-" + eid + ' .dislike a.entity-comment').toggleClass('disable-status')
-        jQuery("#like-container-" + eid + ' .like a.entity-comment').toggleClass('disable-status')
-        jQuery("#dislike-container-" + eid + ' .dislike img.entity-comment').attr('src', Drupal.settings.basePath + likedislike_path + "/images/" + imageNameDisliked)
-        jQuery("#like-container-" + eid + ' .like img.entity-comment').attr('src', Drupal.settings.basePath + likedislike_path + "/images/" + imageNameLike)
-
+        jQuery('#dislike-container-' + eid + ' .throbber').hide()
+        
         if (typeof message == "string" && message.length > 0)
           alert(message)
     )
