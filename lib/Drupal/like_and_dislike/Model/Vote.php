@@ -58,7 +58,7 @@ class Vote {
       $setVote = votingapi_set_votes($vote);
     }
     else {
-      $message = t(variable_get('like_and_dislike_vote_denied_msg', "You don't have permission to vote"));
+      $message = t(variable_get('like_and_dislike_vote_' . $entity_type . '_denied_msg', "You don't have permission to vote"));
     }
 
     // Get the updated like/dislike counts and print them with a message if any
