@@ -19,23 +19,20 @@ class Vote {
    * Example: 3/2/The user can't vote
    * 
    * @global type $user
-   * @param type $nid
+   * @param type $entity_id
    * @param type $entity_type
    * @param type $action
    * @return type
    */
-  static public function add($nid, $entity_type, $action) {
+  static public function add($entity_id, $entity_type, $action) {
 
     global $user;
     $message = '';
 
-    // If has permission to vote execute all the vote logic
-    $can_vote = ($entity_type == 'comment' && user_access('like comment')) ||
-      ($entity_type == 'node' && ($node = node_load($nid)) && user_access('like node ' . $node->type));
-    if ($can_vote) {
+    if (user_access('Like ' . $entity_type . ' entities')) {
       //Check if disliked
       $checkCriteria = array(
-        'entity_id' => $nid,
+        'entity_id' => $entity_id,
         'tag' => $action == 'like' ? 'dislike' : 'like',
         'uid' => $user->uid,
         'entity_type' => $entity_type,
@@ -52,7 +49,7 @@ class Vote {
       }
 
       $vote = array(
-        'entity_id' => $nid,
+        'entity_id' => $entity_id,
         'value' => 1,
         'tag' => $action,
         'entity_type' => $entity_type,
@@ -66,17 +63,17 @@ class Vote {
 
     // Get the updated like/dislike counts and print them with a message if any
     $criteriaLike = array(
-      'entity_id' => $nid,
+      'entity_id' => $entity_id,
       'tag' => 'like',
       'entity_type' => $entity_type,
     );
     $criteriaDislike = array(
-      'entity_id' => $nid,
+      'entity_id' => $entity_id,
       'tag' => 'dislike',
       'entity_type' => $entity_type,
     );
 
-    entity_get_controller('node')->resetCache(array($nid));
+    entity_get_controller('node')->resetCache(array($entity_id));
 
     $likeCount = sizeof(votingapi_select_votes($criteriaLike));
     $dislikeCount = sizeof(votingapi_select_votes($criteriaDislike));

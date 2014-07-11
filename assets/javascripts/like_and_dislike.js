@@ -4,29 +4,19 @@
       attach: function(context, settings) {}
     };
     return $(document).ready(function($) {
-      $('.like_and_dislike-container.type-entity-node.like a').click(function() {
-        var nid;
-        $('.like_and_dislike-container.type-entity-node.like .throbber').show();
-        nid = $(this).data('eid');
-        return LikeDislikeService.likeNode(nid);
+      $('.like-and-dislike-container.like a').click(function() {
+        var entity_id, entity_type;
+        entity_id = $(this).data('entity-id');
+        entity_type = $(this).data('entity-type');
+        $('#like-container-' + entity_type + '-' + entity_id + ' .throbber').show();
+        return LikeDislikeService.vote(entity_id, entity_type, 'like');
       });
-      $('.like_and_dislike-container.type-entity-node.dislike a').click(function() {
-        var nid;
-        $('.like_and_dislike-container.type-entity-node.dislike .throbber').show();
-        nid = $(this).data('eid');
-        return LikeDislikeService.dislikeNode(nid);
-      });
-      $('.like_and_dislike-container.type-entity-comment.like a').click(function() {
-        var cid;
-        $('.like_and_dislike-container.type-entity-comment.like .throbber').show();
-        cid = $(this).data('eid');
-        return LikeDislikeService.likeComment(cid);
-      });
-      $('.like_and_dislike-container.type-entity-comment.dislike a').click(function() {
-        var cid;
-        $('.like_and_dislike-container.type-entity-comment.dislike .throbber').show();
-        cid = $(this).data('eid');
-        return LikeDislikeService.dislikeComment(cid);
+      return $('.like-and-dislike-container.dislike a').click(function() {
+        var entity_id, entity_type;
+        entity_id = $(this).data('entity-id');
+        entity_type = $(this).data('entity-type');
+        $('#dislike-container-' + entity_type + '-' + entity_id + ' .throbber').show();
+        return LikeDislikeService.vote(entity_id, entity_type, 'dislike');
       });
     });
   })(jQuery);
