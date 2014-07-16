@@ -75,10 +75,20 @@ function like_and_dislike_entity_load($entities, $entity_type) {
   foreach ($entities as $entity_id => $entity) {
 
     if (!empty($entity->type)) {
+      // Every entity type other than comments that i'm aware
       $bundle = $entity->type;
     }
-    else {
+    else if (!empty($entity->node_type)) {
+      // Comments
       $bundle = $entity->node_type;
+    }
+    else {
+      /*
+       * I only came to this situation for File entity type, and didn't figured 
+       * out an use case that is worth be considered here. If someone finds an 
+       * Entity Type that should be considered here, please open an issue.
+       */
+      continue;
     }
     $vote_is_available_to_this_type = variable_get('like_and_dislike_vote_' . $bundle . '_available', 0);
 
