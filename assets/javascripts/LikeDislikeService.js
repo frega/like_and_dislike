@@ -17,8 +17,8 @@
           }
           jQuery('#like-container-' + entity_type + '-' + entity_id + ' .count').html(likeCount);
           jQuery('#dislike-container-' + entity_type + '-' + entity_id + ' .count').html(dislikeCount);
-          jQuery('#like-container-' + entity_type + '-' + entity_id + ' .like a.entity-' + entity_type).toggleClass('disable-status');
-          jQuery('#dislike-container-' + entity_type + '-' + entity_id + ' .dislike a.entity-' + entity_type).toggleClass('disable-status');
+          jQuery('#like-container-' + entity_type + '-' + entity_id + ' a').toggleClass('disable-status');
+          jQuery('#dislike-container-' + entity_type + '-' + entity_id + ' a').toggleClass('disable-status');
           jQuery('#' + tag + '-container-' + entity_type + '-' + entity_id + ' .throbber').hide();
           if (typeof message === "string" && message.length > 0) {
             return alert(message);

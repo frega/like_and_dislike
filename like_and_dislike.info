@@ -7,3 +7,5 @@ configure = admin/config/search/like_and_dislike
 
 dependencies[] = cool
 dependencies[] = votingapi
+
+stylesheets[all][] = assets/stylesheets/like_and_dislike.css
