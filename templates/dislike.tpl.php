@@ -7,15 +7,12 @@
  */
 ?>
 <div class="like-and-dislike-container dislike type-<?php print $entity_type ?>" id="dislike-container-<?php print $entity_type ?>-<?php print $entity_id ?>">
-  <div class="inner">
-    <div class="link">
-      <a title="Dislike" 
-         data-entity-id="<?php print $entity_id ?>"
-         data-entity-type="<?php print $entity_type ?>"
-         class="<?php if ($dislikestatus == 1) print ' disable-status' ?>">
-        Dislike <span class="count"><?php print $dislikes; ?></span>
-      </a>
-      <span style="display:none" class="throbber">Loading...</span>
-    </div>
-  </div>
+  <a title="Dislike" 
+     data-entity-id="<?php print $entity_id ?>"
+     data-entity-type="<?php print $entity_type ?>"
+     class="<?php if ($dislikestatus == 1) print ' disable-status' ?>">
+    Dislike
+  </a>
+  <span class="count"><?php print $dislikes; ?></span>
+  <span style="display:none" class="throbber">Loading...</span>
 </div>
