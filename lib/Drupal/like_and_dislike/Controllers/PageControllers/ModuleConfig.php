@@ -9,7 +9,7 @@ namespace Drupal\like_and_dislike\Controllers\PageControllers;
 class ModuleConfig implements \Drupal\cool\Controllers\PageController {
 
   public static function getPath() {
-    return 'admin/config/search/like_and_dislike';
+    return 'admin/config/like_and_dislike';
   }
 
   public static function accessCallback() {
@@ -18,7 +18,7 @@ class ModuleConfig implements \Drupal\cool\Controllers\PageController {
 
   public static function getDefinition() {
     return array(
-      'title' => t('Vote Like/Dislike'),
+      'title' => t('Like & Dislike'),
       'description' => t('Management options for the like and dislike buttons.'),
     );
   }

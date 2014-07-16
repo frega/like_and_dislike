@@ -16,24 +16,35 @@ class ModuleConfig extends \Drupal\cool\BaseForm {
     $form = parent::build();
 
     $entity_types = entity_get_info();
+
+    $form['like_and_dislike_vote_types_enabled'] = array(
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      '#title' => t('Entity types with Like & Dislike widgets enabled:'),
+      '#description' => t('If you disable any type here, already existing data will remain untouched.'),
+    );
     foreach ($entity_types as $entity_type) {
       foreach ($entity_type['bundles'] as $key => $bundle) {
-        $form['like_and_dislike_vote_' . $key] = array(
-          '#type' => 'fieldset',
-          '#collapsible' => TRUE,
-          '#collapsed' => TRUE,
-          '#title' => t('Entity type: ' . $bundle['label']),
-        );
-        $form['like_and_dislike_vote_' . $key]['like_and_dislike_vote_' . $key . '_available'] = array(
+        $form['like_and_dislike_vote_types_enabled']['like_and_dislike_vote_' . $key . '_available'] = array(
           '#type' => 'checkbox',
-          '#title' => t('Enable like/dislike to entities from this type'),
-          '#description' => t('If you disable it here, already existing data will remain untouched.'),
+          '#title' => $bundle['label'],
           '#default_value' => variable_get('like_and_dislike_vote_' . $key . '_available', 0),
         );
-        $form['like_and_dislike_vote_' . $key]['like_and_dislike_vote_' . $key . '_denied_msg'] = array(
+      }
+    }
+    $form['like_and_dislike_vote_denied_messages'] = array(
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#title' => t('Vote denied messages for each entity type'),
+      '#description' => t("This is the message that the user will see if doesn't have permission to vote on the specified type:"),
+    );
+    foreach ($entity_types as $entity_type) {
+      foreach ($entity_type['bundles'] as $key => $bundle) {
+        $form['like_and_dislike_vote_denied_messages']['like_and_dislike_vote_' . $key . '_denied_msg'] = array(
           '#type' => 'textfield',
-          '#title' => t('Vote denied message'),
-          '#description' => t("This is the message that the user will see if doesn't have permission to vote"),
+          '#title' => $bundle['label'],
           '#default_value' => variable_get('like_and_dislike_vote_' . $key . '_denied_msg', "You don't have permission to vote"),
         );
       }
