@@ -35,16 +35,40 @@ function like_and_dislike_permission() {
   // End users
   $entity_types = entity_get_info();
   foreach ($entity_types as $type_name => $type_info) {
-    $perms['Like ' . $type_name . ' entities'] = array(
-      'title' => t('Add like to %type', array('%type' => $type_info->name)),
-      'description' => t('Allow users to Like entities of type %type.', array('%type' => $type_info->name)),
-      'restrict access' => TRUE,
-    );
-    $perms['View likes from ' . $type_name . ' entities'] = array(
-      'title' => t('View likes of %type', array('%type' => $type_info->name)),
-      'description' => t('Allow users to view Likes from entities of type %type.', array('%type' => $type_info->name)),
-      'restrict access' => TRUE,
-    );
+    
+    if(!in_array($type_name, Drupal\like_and_dislike\Model\Entity::$available_entity_types)) {
+      continue;
+    }
+    switch($type_name) {
+      case 'node':
+        foreach($type_info['bundles'] as $bundle_name => $bundle) {
+          $perms['like/dislike any ' . $bundle_name . ' nodes'] = array(
+            'title' => t('Add like/dislike to any %type', array('%type' => $bundle['label'])),
+            'description' => t('Allow users to Like/Dislike nodes from %type content type.', array('%type' => $bundle['label'])),
+            'restrict access' => TRUE,
+          );
+          $perms['view likes/dislikes from every ' . $bundle_name . ' nodes'] = array(
+            'title' => t('View likes/dislikes from every %type', array('%type' => $bundle['label'])),
+            'description' => t('Allow users to view Likes/Dislikes from entities of type %type.', array('%type' => $bundle['label'])),
+            'restrict access' => TRUE,
+          );
+        }
+        break;
+      case 'comment':
+        foreach($type_info['bundles'] as $bundle_name => $bundle) {
+          $perms['like/dislike any ' . $bundle_name . ' comments'] = array(
+            'title' => t('Add like/dislike to any %type', array('%type' => $bundle['label'])),
+            'description' => t('Allow users to Like/Dislike entities from %type content type.', array('%type' => $bundle['label'])),
+            'restrict access' => TRUE,
+          );
+          $perms['view likes/dislikes from every ' . $bundle_name . ' comments'] = array(
+            'title' => t('View likes/dislikes from every %type', array('%type' => $bundle['label'])),
+            'description' => t('Allow users to view Likes/Dislikes from entities of type %type.', array('%type' => $bundle['label'])),
+            'restrict access' => TRUE,
+          );
+        }
+        break;
+    }
   }
   return $perms;
 }
@@ -73,40 +97,23 @@ function like_and_dislike_theme() {
 function like_and_dislike_entity_load($entities, $entity_type) {
   global $user;
   foreach ($entities as $entity_id => $entity) {
+    
+    $Entity = new \Drupal\like_and_dislike\Model\Entity($entity);
+    
+    if ($Entity->voteIsAvailable()) {
+      $can_vote = $Entity->userCanVote($user);
 
-    if (!empty($entity->type)) {
-      // Every entity type other than comments that i'm aware
-      $bundle = $entity->type;
-    }
-    else if (!empty($entity->node_type)) {
-      // Comments
-      $bundle = $entity->node_type;
-    }
-    else {
-      /*
-       * I only came to this situation for File entity type, and didn't figured 
-       * out an use case that is worth be considered here. If someone finds an 
-       * Entity Type that should be considered here, please open an issue.
-       */
-      continue;
-    }
-    $vote_is_available_to_this_type = variable_get('like_and_dislike_vote_' . $bundle . '_available', 0);
+      // Check the voting status based on the permission and if already voted for like or dislike as he can't repeat vote
+      if ($user->uid == 0) {
+        $ip = ip_address();
+        $likestatus = $can_vote ? $Entity->getLikesAmount($user->uid, $ip) : 1;
+        $dislikestatus = $can_vote ? $Entity->getDislikesAmount($user->uid, $ip) : 1;
+      }
+      else {
+        $likestatus = $can_vote ? $Entity->getLikesAmount($user->uid) : 1;
+        $dislikestatus = $can_vote ? $Entity->getDislikesAmount($user->uid) : 1;
+      }
 
-    $Entity = new \Drupal\like_and_dislike\Model\Entity($entity_id, $entity_type);
-
-    $can_vote = user_access('like entity ' . $entity_type);
-    // Check the voting status based on the permission and if already voted for like or dislike as he can't repeat vote
-    if ($user->uid == 0) {
-      $ip = ip_address();
-      $likestatus = $can_vote ? $Entity->getLikesAmount($user->uid, $ip) : 1;
-      $dislikestatus = $can_vote ? $Entity->getDislikesAmount($user->uid, $ip) : 1;
-    }
-    else {
-      $likestatus = $can_vote ? $Entity->getLikesAmount($user->uid) : 1;
-      $dislikestatus = $can_vote ? $Entity->getDislikesAmount($user->uid) : 1;
-    }
-
-    if ($vote_is_available_to_this_type) {
       // Add the themed buttons for like/dislike
       $entity->like = theme('like', array(
         'entity_id' => $entity_id,
@@ -128,8 +135,11 @@ function like_and_dislike_entity_load($entities, $entity_type) {
  * Renders the like/dislike buttons if the user has permission to see it
  */
 function like_and_dislike_entity_view($entity, $type, $view_mode, $langcode) {
+  
+  $Entity = new \Drupal\like_and_dislike\Model\Entity($entity);
+  
   // Don't display the like/dislike if has no permissions to view
-  if (user_access('view likes ' . $type)) {
+  if ($Entity->userCanVote() || $Entity->userCanViewVotes()) {
     if (isset($entity->like) && isset($entity->dislike)) {
       $entity->content['like'] = array(
         '#markup' => $entity->like,

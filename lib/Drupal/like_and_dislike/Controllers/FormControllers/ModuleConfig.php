@@ -25,6 +25,9 @@ class ModuleConfig extends \Drupal\cool\BaseForm {
       '#description' => t('If you disable any type here, already existing data will remain untouched.'),
     );
     foreach ($entity_types as $entity_type) {
+      if(!in_array($entity_type['base table'], \Drupal\like_and_dislike\Model\Entity::$available_entity_types)) {
+        continue;
+      }
       foreach ($entity_type['bundles'] as $key => $bundle) {
         $form['like_and_dislike_vote_types_enabled']['like_and_dislike_vote_' . $key . '_available'] = array(
           '#type' => 'checkbox',
@@ -41,6 +44,9 @@ class ModuleConfig extends \Drupal\cool\BaseForm {
       '#description' => t("This is the message that the user will see if doesn't have permission to vote on the specified type:"),
     );
     foreach ($entity_types as $entity_type) {
+      if(!in_array($entity_type['base table'], \Drupal\like_and_dislike\Model\Entity::$available_entity_types)) {
+        continue;
+      }
       foreach ($entity_type['bundles'] as $key => $bundle) {
         $form['like_and_dislike_vote_denied_messages']['like_and_dislike_vote_' . $key . '_denied_msg'] = array(
           '#type' => 'textfield',

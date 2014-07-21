@@ -7,6 +7,11 @@ namespace Drupal\like_and_dislike\Controllers\PageControllers;
  */
 class EntityLikeDislikeVoteCallback implements \Drupal\cool\Controllers\PageController {
 
+  /**
+   * %1 = entity_type
+   * %2 = tag
+   * %3 = entity_id
+   */
   static public function getPath() {
     return 'like_and_dislike/%/%/%';
   }

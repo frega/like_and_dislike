@@ -3,7 +3,7 @@ description = Enable like and dislike widgets and statistics
 core = 7.x
 package = Voting
 
-configure = admin/config/search/like_and_dislike
+configure = admin/config/like_and_dislike
 
 dependencies[] = cool
 dependencies[] = votingapi

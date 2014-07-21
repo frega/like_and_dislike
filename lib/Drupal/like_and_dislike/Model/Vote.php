@@ -19,45 +19,48 @@ class Vote {
    * Example: 3/2/The user can't vote
    * 
    * @global type $user
-   * @param type $entity_id
    * @param type $entity_type
-   * @param type $action
+   * @param type $entity_id
+   * @param type $vote_tag
    * @return type
    */
-  static public function add($entity_id, $entity_type, $action) {
+  static public function add($entity_id, $entity_type, $vote_tag) {
 
     global $user;
     $message = '';
 
-    if (user_access('Like ' . $entity_type . ' entities')) {
+    $entities = entity_load($entity_type, array($entity_id));
+
+    $Entity = new \Drupal\like_and_dislike\Model\Entity(current($entities));
+
+    $can_vote = $Entity->userCanVote();
+    if ($can_vote) {
       //Check if disliked
       $checkCriteria = array(
         'entity_id' => $entity_id,
-        'tag' => $action == 'like' ? 'dislike' : 'like',
+        'tag' => $vote_tag == 'like' ? 'dislike' : 'like',
         'uid' => $user->uid,
         'entity_type' => $entity_type,
       );
       if ($user->uid == 0) {
         $checkCriteria['vote_source'] = ip_address();
       }
-      $dislikeResult = votingapi_select_votes($checkCriteria);
-      $dislikeCount = count($dislikeResult);
+      $search_previous_vote = votingapi_select_votes($checkCriteria);
+      $previous_vote = count($search_previous_vote);
 
-      if ($dislikeCount == 1) {
-        print $dislikeResult->vote_id;
-        votingapi_delete_votes($dislikeResult);
+      if ($previous_vote == 1) {
+        votingapi_delete_votes($search_previous_vote);
       }
 
       $vote = array(
         'entity_id' => $entity_id,
         'value' => 1,
-        'tag' => $action,
+        'tag' => $vote_tag,
         'entity_type' => $entity_type,
         'value_type' => 'points',
       );
       $setVote = votingapi_set_votes($vote);
-    }
-    else {
+    } else {
       $message = t(variable_get('like_and_dislike_vote_' . $entity_type . '_denied_msg', "You don't have permission to vote"));
     }
 
