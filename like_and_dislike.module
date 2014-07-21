@@ -95,38 +95,11 @@ function like_and_dislike_theme() {
  * Loads the like/dislike information to the entity object
  */
 function like_and_dislike_entity_load($entities, $entity_type) {
-  global $user;
   foreach ($entities as $entity_id => $entity) {
-    
     $Entity = new \Drupal\like_and_dislike\Model\Entity($entity);
-    
     if ($Entity->voteIsAvailable()) {
-      $can_vote = $Entity->userCanVote($user);
-
-      // Check the voting status based on the permission and if already voted for like or dislike as he can't repeat vote
-      if ($user->uid == 0) {
-        $ip = ip_address();
-        $likestatus = $can_vote ? $Entity->getLikesAmount($user->uid, $ip) : 1;
-        $dislikestatus = $can_vote ? $Entity->getDislikesAmount($user->uid, $ip) : 1;
-      }
-      else {
-        $likestatus = $can_vote ? $Entity->getLikesAmount($user->uid) : 1;
-        $dislikestatus = $can_vote ? $Entity->getDislikesAmount($user->uid) : 1;
-      }
-
-      // Add the themed buttons for like/dislike
-      $entity->like = theme('like', array(
-        'entity_id' => $entity_id,
-        'likes' => $Entity->getLikesAmount(),
-        'likestatus' => $likestatus,
-        'entity_type' => $entity_type,
-      ));
-      $entity->dislike = theme('dislike', array(
-        'entity_id' => $entity_id,
-        'dislikes' => $Entity->getDislikesAmount(),
-        'dislikestatus' => $dislikestatus,
-        'entity_type' => $entity_type,
-      ));
+      $entity->like = $Entity->getLikesAmount();
+      $entity->dislike = $Entity->getDislikesAmount();
     }
   }
 }
@@ -138,17 +111,44 @@ function like_and_dislike_entity_view($entity, $type, $view_mode, $langcode) {
   
   $Entity = new \Drupal\like_and_dislike\Model\Entity($entity);
   
-  // Don't display the like/dislike if has no permissions to view
-  if ($Entity->userCanVote() || $Entity->userCanViewVotes()) {
-    if (isset($entity->like) && isset($entity->dislike)) {
-      $entity->content['like'] = array(
-        '#markup' => $entity->like,
-        '#weight' => 10,
-      );
-      $entity->content['dislike'] = array(
-        '#markup' => $entity->dislike,
-        '#weight' => 11,
-      );
+  if ($Entity->voteIsAvailable()) {
+    global $user;
+    $can_vote = $Entity->userCanVote($user);
+
+    // Check the voting status based on the permission and if already voted for like or dislike as he can't repeat vote
+    if ($user->uid == 0) {
+      $ip = ip_address();
+      $likestatus = $can_vote ? $Entity->getLikesAmount($user->uid, $ip) : 1;
+      $dislikestatus = $can_vote ? $Entity->getDislikesAmount($user->uid, $ip) : 1;
+    }
+    else {
+      $likestatus = $can_vote ? $Entity->getLikesAmount($user->uid) : 1;
+      $dislikestatus = $can_vote ? $Entity->getDislikesAmount($user->uid) : 1;
+    }
+      
+    // Don't display the like/dislike if has no permissions to view
+    if ($can_vote || $Entity->userCanViewVotes()) {
+      if (isset($entity->like) && isset($entity->dislike)) {
+        $id = 'like-and-dislike-widget-' . $Entity->entity_type . '-' . $Entity->entity_id;
+        $like_widget = theme('like', array(
+          'entity_id' => $Entity->entity_id,
+          'likes' => $Entity->getLikesAmount(),
+          'likestatus' => $likestatus,
+          'entity_type' => $Entity->entity_type,
+        ));
+        $dislike_widget = theme('dislike', array(
+          'entity_id' => $Entity->entity_id,
+          'dislikes' => $Entity->getDislikesAmount(),
+          'dislikestatus' => $dislikestatus,
+          'entity_type' => $Entity->entity_type,
+        ));
+        $entity->content['like_and_dislike_widgets'] = array(
+          '#prefix' => '<div id="' . $id . '" class="like-and-dislike-widget clearfix">',
+          '#suffix' => '</div>',
+          '#markup' => $like_widget . $dislike_widget,
+          '#weight' => 100,
+        );
+      }
     }
   }
   return $entity;
