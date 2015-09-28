@@ -1,5 +1,5 @@
 like_and_dislike.admin_settings:
-  path: 'admin/config/like_and_dislike'
+  path: 'admin/config/search/votingapi/like_and_dislike'
   defaults:
    _title: 'Like & Dislike settings'
    _description: 'Management options for the like and dislike buttons.'
