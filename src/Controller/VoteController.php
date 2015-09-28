@@ -25,18 +25,34 @@ class VoteController extends ControllerBase implements ContainerInjectionInterfa
    * {@inheritdoc}
    */
   function vote($entity_type_id, $vote_type_id, $entity_id, Request $request) {
-    // TODO: $vote_type = VoteType::load();
-    $vote = Vote::create(['type' => $vote_type_id]);
-    $vote->setVotedEntityId($entity_id);
-    $vote->setVotedEntityType($entity_type_id);
-    $vote->setValueType('points');
-    $vote->setValue(1);
-    $vote->save();
 
-    drupal_set_message(t('Your :type vote was added.', [
-      ':type' => $vote_type_id
-    ]));
+    $vote_storage = \Drupal::entityManager()->getStorage('vote');
+    $user_votes = $vote_storage->getUserVotes(
+      \Drupal::currentUser()->id(),
+      $vote_type_id,
+      $entity_type_id,
+      $entity_id
+    );
 
+    if (empty($user_votes)) {
+      $vote_type = VoteType::load($vote_type_id);
+      $vote = Vote::create(['type' => $vote_type_id]);
+      $vote->setVotedEntityId($entity_id);
+      $vote->setVotedEntityType($entity_type_id);
+      $vote->setValueType($vote_type->getValueType());
+      $vote->setValue(1);
+      $vote->save();
+
+      drupal_set_message(t('Your :type vote was added.', [
+        ':type' => $vote_type_id
+      ]));
+    }
+    else {
+      drupal_set_message(
+        t('You are not allowed to vote the same way multiple times.')
+        , 'warning'
+      );
+    }
     $url = $request->getUriForPath($request->getPathInfo());
     return new RedirectResponse($url);
   }
